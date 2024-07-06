@@ -115,26 +115,28 @@
     <script>
         $(document).ready(function () {
             var productIndex = 1;
+
             $('#addProduct').click(function () {
                 var newRow = `<tr>
-                                        <td><input name="Products[${productIndex}].ItemNo" class="form-control" /></td>
-                                        <td><input name="Products[${productIndex}].Description" class="form-control" /></td>
-                                        <td><input name="Products[${productIndex}].Quantity" class="form-control" /></td>
-                                        <td><input name="Products[${productIndex}].Price" class="form-control" /></td>
-                                        <td><input name="Products[${productIndex}].Discount" class="form-control" /></td>
-                                        <td><input name="Products[${productIndex}].Amount" class="form-control" readonly /></td>
-                                        <td><button type="button" class="btn btn-danger remove-product">Remove</button></td>
-                                    </tr>`;
+                                    <td><input name="Products[${productIndex}].ItemNo" class="form-control" /></td>
+                                    <td><input name="Products[${productIndex}].Description" class="form-control" /></td>
+                                    <td><input name="Products[${productIndex}].Quantity" class="form-control" /></td>
+                                    <td><input name="Products[${productIndex}].Price" class="form-control" /></td>
+                                    <td><input name="Products[${productIndex}].Discount" class="form-control" /></td>
+                                    <td><input name="Products[${productIndex}].Amount" class="form-control" readonly /></td>
+                                    <td><button type="button" class="btn btn-danger remove-product">Remove</button></td>
+                                </tr>`;
                 $('#productTableBody').append(newRow);
                 productIndex++;
             });
 
             $(document).on('click', '.remove-product', function () {
                 $(this).closest('tr').remove();
+                calculateAmounts(); // Recalculate amounts after removing a row
             });
 
             $(document).on('input', 'input[name^="Products"]', function () {
-                calculateAmounts();
+                calculateAmounts(); // Recalculate amounts on any input change
             });
 
             function calculateAmounts() {
@@ -151,5 +153,6 @@
                 $('#totalAmount').text(totalAmount.toFixed(2));
             }
         });
+
     </script>
 }
