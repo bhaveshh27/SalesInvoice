@@ -1,0 +1,27 @@
+﻿@model IEnumerable<SaleInvoice>
+
+<table>
+    <thead>
+        <tr>
+            <th>Invoice No</th>
+            <th>Date</th>
+            <th>Customer Name</th>
+            <th>Total Amount</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invoice in Model)
+        {
+            <tr>
+                <td>@invoice.SalesInvoiceNo</td>
+                <td>@invoice.SalesInvoiceDate.ToShortDateString()</td>
+                <td>@invoice.TotalAmount</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@invoice.SalesInvoiceNo">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@invoice.SalesInvoiceNo">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

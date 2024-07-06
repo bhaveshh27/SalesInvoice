@@ -1,0 +1,155 @@
+﻿@model SalesInvoiceViewModel
+
+@{
+    ViewData["Title"] = "Create Sales Invoice";
+}
+
+<h1>Sales Invoice</h1>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div>
+        <label asp-for="SalesInvoiceNo">Invoice No:</label>
+        <input asp-for="SalesInvoiceNo" class="form-control" />
+        <span asp-validation-for="SalesInvoiceNo" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="SalesInvoiceDate">Invoice Date:</label>
+        <input asp-for="SalesInvoiceDate" class="form-control" />
+        <span asp-validation-for="SalesInvoiceDate" class="text-danger"></span>
+    </div>
+
+    <fieldset>
+        <legend>Customer</legend>
+        <div>
+            <label asp-for="Customer.CompanyName">Company:</label>
+            <input asp-for="Customer.CompanyName" class="form-control" />
+            <span asp-validation-for="Customer.CompanyName" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Customer.Address">Address:</label>
+            <input asp-for="Customer.Address" class="form-control" />
+            <span asp-validation-for="Customer.Address" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Customer.PhoneNumber">Phone Number:</label>
+            <input asp-for="Customer.PhoneNumber" class="form-control" />
+            <span asp-validation-for="Customer.PhoneNumber" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Customer.Email">Email:</label>
+            <input asp-for="Customer.Email" class="form-control" />
+            <span asp-validation-for="Customer.Email" class="text-danger"></span>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Sender</legend>
+        <div>
+            <label asp-for="Sender.CompanyName">Company:</label>
+            <input asp-for="Sender.CompanyName" class="form-control" />
+            <span asp-validation-for="Sender.CompanyName" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Sender.Address">Address:</label>
+            <input asp-for="Sender.Address" class="form-control" />
+            <span asp-validation-for="Sender.Address" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Sender.PhoneNumber">Phone Number:</label>
+            <input asp-for="Sender.PhoneNumber" class="form-control" />
+            <span asp-validation-for="Sender.PhoneNumber" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Sender.Email">Email:</label>
+            <input asp-for="Sender.Email" class="form-control" />
+            <span asp-validation-for="Sender.Email" class="text-danger"></span>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Products</legend>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item No</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>Amount</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="productTableBody">
+                <tr>
+                    <td><input name="Products[0].ItemNo" class="form-control" /></td>
+                    <td><input name="Products[0].Description" class="form-control" /></td>
+                    <td><input name="Products[0].Quantity" class="form-control" /></td>
+                    <td><input name="Products[0].Price" class="form-control" /></td>
+                    <td><input name="Products[0].Discount" class="form-control" /></td>
+                    <td><input name="Products[0].Amount" class="form-control" readonly /></td>
+                    <td><button type="button" class="btn btn-danger remove-product">Remove</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="button" id="addProduct" class="btn btn-success">Add Line</button>
+    </fieldset>
+
+    <div>
+        <label asp-for="Notes">Notes:</label>
+        <textarea asp-for="Notes" class="form-control"></textarea>
+        <span asp-validation-for="Notes" class="text-danger"></span>
+    </div>
+    <div>
+        <label>Total Amount:</label>
+        <span id="totalAmount">0.00</span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            var productIndex = 1;
+            $('#addProduct').click(function () {
+                var newRow = `<tr>
+                                        <td><input name="Products[${productIndex}].ItemNo" class="form-control" /></td>
+                                        <td><input name="Products[${productIndex}].Description" class="form-control" /></td>
+                                        <td><input name="Products[${productIndex}].Quantity" class="form-control" /></td>
+                                        <td><input name="Products[${productIndex}].Price" class="form-control" /></td>
+                                        <td><input name="Products[${productIndex}].Discount" class="form-control" /></td>
+                                        <td><input name="Products[${productIndex}].Amount" class="form-control" readonly /></td>
+                                        <td><button type="button" class="btn btn-danger remove-product">Remove</button></td>
+                                    </tr>`;
+                $('#productTableBody').append(newRow);
+                productIndex++;
+            });
+
+            $(document).on('click', '.remove-product', function () {
+                $(this).closest('tr').remove();
+            });
+
+            $(document).on('input', 'input[name^="Products"]', function () {
+                calculateAmounts();
+            });
+
+            function calculateAmounts() {
+                var totalAmount = 0;
+                $('input[name^="Products"]').each(function () {
+                    var row = $(this).closest('tr');
+                    var quantity = parseFloat(row.find('input[name$=".Quantity"]').val()) || 0;
+                    var price = parseFloat(row.find('input[name$=".Price"]').val()) || 0;
+                    var discount = parseFloat(row.find('input[name$=".Discount"]').val()) || 0;
+                    var amount = (quantity * price) - discount;
+                    row.find('input[name$=".Amount"]').val(amount.toFixed(2));
+                    totalAmount += amount;
+                });
+                $('#totalAmount').text(totalAmount.toFixed(2));
+            }
+        });
+    </script>
+}

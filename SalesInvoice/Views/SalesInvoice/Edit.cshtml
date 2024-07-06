@@ -1,0 +1,70 @@
+﻿@model SalesInvoiceViewModel
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    <!-- Sales Invoice Details -->
+    <div>
+        <label for="SalesInvoiceNo">Sales Invoice No:</label>
+        <input type="text" asp-for="SalesInvoiceNo" />
+    </div>
+    <div>
+        <label for="SalesInvoiceDate">Sales Invoice Date:</label>
+        <input type="date" asp-for="SalesInvoiceDate" />
+    </div>
+    <!-- Customer Details -->
+    <div>
+        <label for="Customer.Address">Address:</label>
+        <input type="text" asp-for="Customer.Address" />
+    </div>
+    <div>
+        <label for="Customer.Email">Email:</label>
+        <input type="email" asp-for="Customer.Email" />
+    </div>
+    <!-- Product Details -->
+    <div id="product-list">
+        @for (var i = 0; i < Model.Products.Count; i++)
+        {
+            <div class="product-item">
+                <label for="Products[@i].Name">Product Name:</label>
+                <input type="text" name="Products[@i].Name" value="@Model.Products[i]." />
+                <label for="Products[@i].Quantity">Quantity:</label>
+                <input type="number" name="Products[@i].Quantity" value="@Model.Products[i].Quantity" />
+                <label for="Products[@i].Price">Price:</label>
+                <input type="number" name="Products[@i].Price" value="@Model.Products[i].Price" />
+                <label for="Products[@i].Discount">Discount:</label>
+                <input type="number" name="Products[@i].Discount" value="@Model.Products[i].Discount" />
+                <button type="button" onclick="removeProduct(this)">Remove</button>
+            </div>
+        }
+    </div>
+    <button type="button" onclick="addProduct()">Add Product</button>
+    <button type="submit">Save Invoice</button>
+</form>
+
+<script>
+    let productIndex = @Model.Products.Count;
+
+    function addProduct() {
+        const productList = document.getElementById('product-list');
+        const newProduct = document.createElement('div');
+        newProduct.classList.add('product-item');
+        newProduct.innerHTML = `
+                    <label for="Products[${productIndex}].Name">Product Name:</label>
+                    <input type="text" name="Products[${productIndex}].Name" />
+                    <label for="Products[${productIndex}].Quantity">Quantity:</label>
+                    <input type="number" name="Products[${productIndex}].Quantity" />
+                    <label for="Products[${productIndex}].Price">Price:</label>
+                    <input type="number" name="Products[${productIndex}].Price" />
+                    <label for="Products[${productIndex}].Discount">Discount:</label>
+                    <input type="number" name="Products[${productIndex}].Discount" />
+                    <button type="button" onclick="removeProduct(this)">Remove</button>
+                `;
+        productList.appendChild(newProduct);
+        productIndex++;
+    }
+
+    function removeProduct(button) {
+        const productItem = button.parentNode;
+        productItem.remove();
+    }
+</script>
